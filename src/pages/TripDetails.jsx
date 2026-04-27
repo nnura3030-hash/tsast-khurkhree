@@ -1,0 +1,262 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import api from '../services/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
+import { useCart } from '../context/CartContext.jsx';
+import { formatCurrency } from '../utils/formatters.js';
+import ReviewSection from '../components/ReviewSection';
+import Breadcrumb from '../components/Breadcrumb';
+
+const inp = 'w-full bg-white/5 border border-white/8 rounded-2xl py-3.5 px-5 text-white placeholder-gray-600 outline-none focus:border-yellow-400/50 focus:ring-2 focus:ring-yellow-400/10 transition-all font-bold text-sm';
+
+const EXTRA_PRICES = { none: 0, mori: 30000, temee: 40000 };
+const WILD_SURCHARGE = 20000;
+
+const TripDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { token, user } = useAuth();
+  const { addToCart } = useCart();
+
+  const [trip, setTrip] = useState(null);
+  const [pageError, setPageError] = useState(null);
+  const [formError, setFormError] = useState('');
+  const [added, setAdded] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [peopleCount, setPeopleCount] = useState(1);
+  const [travelDate, setTravelDate] = useState('');
+  const [extraService, setExtraService] = useState('none');
+  const [foodOption, setFoodOption] = useState('none');
+  const [isWild, setIsWild] = useState(false);
+  const [availableFoods, setAvailableFoods] = useState([]);
+
+  useEffect(() => {
+    api.get(`/api/trips/${id}`)
+      .then(res => setTrip(res.data))
+      .catch(() => setPageError('Аялалын мэдээллийг татахад алдаа гарлаа.'));
+    api.get('/api/foods/all').then(res => setAvailableFoods(res.data)).catch(() => {});
+    const pre = sessionStorage.getItem('preSelectedFood');
+    if (pre) { setFoodOption(pre); sessionStorage.removeItem('preSelectedFood'); }
+  }, [id]);
+
+  useEffect(() => {
+    if (user) { setPhone(user.phone || ''); setCustomerName(user.name || user.phone || ''); }
+  }, [user]);
+
+  const unitPrice = trip?.pricePerPerson || trip?.price || 0;
+  const basePrice = unitPrice * peopleCount;
+  const servicePrice = (EXTRA_PRICES[extraService] + (isWild && extraService !== 'none' ? WILD_SURCHARGE : 0)) * peopleCount;
+  const foodPrice = (availableFoods.find(f => f.name === foodOption)?.price || 0) * peopleCount;
+  const totalPrice = basePrice + servicePrice + foodPrice;
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    setFormError('');
+    if (!token) { navigate('/login'); return; }
+    if (!trip) return;
+    if (!customerName || !phone) return setFormError('Холбоо барих мэдээллээ бүрэн оруулна уу.');
+    if (!travelDate || totalPrice <= 0) return setFormError('Аялах огноог заавал сонгоно уу!');
+
+    addToCart({ type: 'trip', id: trip._id, title: trip.title, name: trip.title, image: trip.image, customerName, phone, peopleCount, travelDate, extraService, foodOption, isWild, totalPrice });
+    setAdded(true);
+    setTimeout(() => navigate('/cart'), 800);
+  };
+
+  if (pageError) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-400 font-bold">{pageError}</p>
+    </div>
+  );
+
+  if (!trip) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-10 h-10 border-2 border-yellow-400/20 border-t-yellow-400 rounded-full animate-spin" />
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen pt-28 pb-24">
+      <div className="max-w-6xl mx-auto px-6">
+        <Breadcrumb overrides={{ [id]: trip?.title || 'Аялал' }} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+          {/* Image */}
+          <div className="lg:sticky lg:top-28 h-fit">
+            <div className="relative rounded-3xl overflow-hidden border border-white/6 shadow-2xl aspect-[4/3]">
+              <img
+                src={trip.image ? `${api.defaults.baseURL}/uploads/${trip.image}` : '/placeholder.jpg'}
+                className="w-full h-full object-cover"
+                alt={trip.title}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5">
+                <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-[9px] font-black text-yellow-400 uppercase tracking-widest">Аялал</p>
+                    <p className="text-white font-black text-sm italic">{trip.title}</p>
+                  </div>
+                  {trip.duration && (
+                    <span className="text-[9px] font-black text-gray-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase">
+                      {trip.duration} цаг
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="space-y-6">
+            <div>
+              <p className="text-yellow-400 font-black uppercase tracking-[0.4em] text-[9px] mb-2">Аялал захиалах</p>
+              <h1 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter">{trip.title}</h1>
+              {trip.location && (
+                <p className="text-gray-500 font-bold text-sm mt-1 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-yellow-400/60" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
+                  {trip.location}
+                </p>
+              )}
+              <div className="flex gap-3 mt-3 flex-wrap">
+                <span className="text-[9px] font-black text-yellow-400 bg-yellow-400/8 border border-yellow-400/15 px-3 py-1.5 rounded-full uppercase tracking-widest">
+                  {formatCurrency(unitPrice)} / хүн
+                </span>
+                {trip.duration && (
+                  <span className="text-[9px] font-black text-gray-500 bg-white/4 border border-white/6 px-3 py-1.5 rounded-full uppercase tracking-widest">
+                    {trip.duration} цаг
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="bg-white/3 border border-white/6 rounded-2xl p-5 flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">Нийт төлөх</p>
+                <p className="text-3xl font-black text-yellow-400 italic tracking-tighter">{formatCurrency(totalPrice)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{peopleCount} хүн</p>
+              </div>
+            </div>
+
+            {formError && (
+              <div className="flex items-center gap-2.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold px-4 py-3 rounded-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                {formError}
+              </div>
+            )}
+
+            <form onSubmit={handleAddToCart} className="space-y-4">
+              {/* Date + People */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Аялах өдөр</label>
+                  <input type="date" min={today} required className={inp} value={travelDate} onChange={e => { setTravelDate(e.target.value); setFormError(''); }} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest ml-1">Хүний тоо</label>
+                  <div className="flex items-center gap-2 bg-white/5 border border-white/8 rounded-2xl px-3 py-2.5">
+                    <button type="button" onClick={() => setPeopleCount(Math.max(1, peopleCount - 1))} className="w-8 h-8 rounded-xl bg-white/5 text-white font-black flex items-center justify-center hover:bg-white/10">−</button>
+                    <span className="flex-1 text-center font-black text-white text-sm">{peopleCount}</span>
+                    <button type="button" onClick={() => setPeopleCount(peopleCount + 1)} className="w-8 h-8 rounded-xl bg-white/5 text-white font-black flex items-center justify-center hover:bg-white/10">+</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Extra service */}
+              <div className="bg-white/3 border border-white/6 rounded-2xl p-5 space-y-3">
+                <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Нэмэлт үйлчилгээ</p>
+                <div className="flex gap-2">
+                  {[
+                    { id: 'none', label: 'Байхгүй' },
+                    { id: 'mori', label: '🐴 Морь' },
+                    { id: 'temee', label: '🐪 Тэмээ' },
+                  ].map(item => (
+                    <button key={item.id} type="button" onClick={() => { setExtraService(item.id); if (item.id === 'none') setIsWild(false); }}
+                      className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase transition-all border ${extraService === item.id ? 'border-yellow-400/50 bg-yellow-400/10 text-yellow-400' : 'border-white/6 text-gray-500 hover:text-white hover:border-white/12'}`}>
+                      {item.label}
+                      {item.id !== 'none' && <span className="block text-[8px] opacity-60">{(EXTRA_PRICES[item.id] / 1000)}k₮</span>}
+                    </button>
+                  ))}
+                </div>
+
+                {extraService !== 'none' && (
+                  <div className="flex items-center justify-between bg-white/3 border border-white/6 rounded-xl px-4 py-3">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      Догшин <span className="text-yellow-400">+{(WILD_SURCHARGE / 1000)}k₮</span>
+                    </p>
+                    <div className="flex bg-white/5 border border-white/8 p-1 rounded-xl gap-1">
+                      <button type="button" onClick={() => setIsWild(false)} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${!isWild ? 'bg-white/10 text-white' : 'text-gray-600'}`}>Номхон</button>
+                      <button type="button" onClick={() => setIsWild(true)} className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${isWild ? 'bg-red-500/80 text-white' : 'text-gray-600'}`}>Догшин</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Food */}
+              {availableFoods.length > 0 && (
+                <div className="bg-white/3 border border-white/6 rounded-2xl p-5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Хоолны сонголт</p>
+                    {foodOption !== 'none' && (
+                      <span className="text-[9px] font-black text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full">
+                        +{formatCurrency((availableFoods.find(f => f.name === foodOption)?.price || 0) * peopleCount)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" onClick={() => setFoodOption('none')}
+                      className={`flex-1 min-w-[80px] py-3 rounded-xl font-black text-[10px] uppercase transition-all border ${foodOption === 'none' ? 'border-yellow-400/50 bg-yellow-400/10 text-yellow-400' : 'border-white/6 text-gray-500 hover:text-white hover:border-white/12'}`}>
+                      Идэхгүй
+                    </button>
+                    {availableFoods.map(item => (
+                      <button key={item._id} type="button" onClick={() => setFoodOption(item.name)}
+                        className={`flex-1 min-w-[80px] py-3 rounded-xl font-black text-[10px] uppercase transition-all border ${foodOption === item.name ? 'border-yellow-400/50 bg-yellow-400/10 text-yellow-400' : 'border-white/6 text-gray-500 hover:text-white hover:border-white/12'}`}>
+                        {item.name}
+                        <span className="block text-[8px] opacity-60">{item.price / 1000}k₮</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <input type="text" placeholder="Таны нэр" required className={inp} value={customerName} onChange={e => { setCustomerName(e.target.value); setFormError(''); }} />
+              <input type="tel" placeholder="Утасны дугаар" required className={inp} value={phone} onChange={e => { setPhone(e.target.value); setFormError(''); }} />
+
+              {/* Border warning */}
+              <div className="flex items-start gap-3 bg-yellow-400/8 border border-yellow-400/15 rounded-2xl px-5 py-4">
+                <span className="text-yellow-400 text-lg shrink-0">⚠️</span>
+                <div>
+                  <p className="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1">Хилийн зөвшөөрөл шаардлагатай</p>
+                  <p className="text-[10px] text-gray-500 font-bold leading-relaxed">
+                    Энэ аялал хилийн зурвас бүсэд явагддаг. Манай ресорт зөвшөөрөл авахад тусална.
+                  </p>
+                </div>
+              </div>
+
+              <button type="submit" disabled={added}
+                className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all duration-300 active:scale-[0.97] ${
+                  added
+                    ? 'bg-emerald-400 text-black'
+                    : token
+                      ? 'bg-yellow-400 text-black hover:bg-white'
+                      : 'bg-white/5 border border-white/8 text-white hover:bg-yellow-400 hover:text-black hover:border-transparent'
+                }`}>
+                {added ? '✓ Сагсанд нэмэгдлээ!' : token ? 'Сагсанд нэмэх →' : 'Нэвтэрч захиалах'}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <ReviewSection refId={id} refType="Trip" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TripDetails;
