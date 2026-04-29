@@ -1,0 +1,5 @@
+[build]
+buildCommand = "npm ci && npm run build && cd backend && npm ci"
+
+[deploy]
+startCommand = "node backend/server.js"
