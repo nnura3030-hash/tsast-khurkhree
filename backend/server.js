@@ -45,10 +45,10 @@ app.use('/api', (req, res) => res.status(404).json({ message: 'API route not fou
 
 app.use('/uploads', express.static('uploads'));
 
-if (process.env.NODE_ENV === 'production') {
-  const frontendDistPath = path.join(__dirname, '..', 'dist');
+const frontendDistPath = path.join(__dirname, '..', 'dist');
+const fs = require('fs');
+if (fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
-
   app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
