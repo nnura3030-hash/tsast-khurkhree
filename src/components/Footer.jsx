@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { useSettings } from '../context/SettingsContext';
 
 const SocialLink = ({ href, children }) => {
   if (!href) return null;
@@ -13,10 +13,7 @@ const SocialLink = ({ href, children }) => {
 };
 
 export default function Footer() {
-  const [settings, setSettings] = useState({});
-  useEffect(() => {
-    api.get('/api/settings').then(r => setSettings(r.data || {})).catch(() => {});
-  }, []);
+  const settings = useSettings();
 
   const brand = settings.brandName?.split('-') || ['Цаст', 'Хүрхрээ'];
   const year  = new Date().getFullYear();

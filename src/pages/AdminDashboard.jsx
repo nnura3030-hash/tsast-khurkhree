@@ -379,17 +379,17 @@ export default function AdminDashboard() {
   const renderStats = () => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {(isAdmin ? [
-        { label:"Нийт орлого",    value:`${formatNumber(stats.total)}₮`,   icon:"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-yellow-400" },
-        { label:"Нийт захиалга",  value:data.bookings.length,               icon:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color:"text-blue-400" },
-        { label:"Баталгаажсан",   value:stats.confirmed,                     icon:"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-emerald-400" },
-        { label:"Буцаалт хүсэлт", value:stats.refundRequested,              icon:"M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6", color: stats.refundRequested > 0 ? "text-orange-400" : "text-white/30" },
+        { label:"Нийт орлого",    value:`${formatNumber(stats.total)}₮`,   icon:"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-yellow-400",  accent:"border-yellow-400/15" },
+        { label:"Нийт захиалга",  value:data.bookings.length,               icon:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color:"text-sky-400",     accent:"border-sky-400/15" },
+        { label:"Баталгаажсан",   value:stats.confirmed,                     icon:"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-emerald-400", accent:"border-emerald-400/15" },
+        { label:"Буцаалт хүсэлт", value:stats.refundRequested,              icon:"M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6", color: stats.refundRequested > 0 ? "text-orange-400" : "text-stone-400 dark:text-white/30", accent: stats.refundRequested > 0 ? "border-orange-400/20" : "border-stone-200 dark:border-white/6" },
       ] : [
-        { label:"Миний захиалга", value:data.bookings.length,               icon:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color:"text-blue-400" },
-        { label:"Баталгаажсан",   value:stats.confirmed,                    icon:"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-emerald-400" },
-        { label:"Хүлээгдэж буй",  value:stats.pending,                      icon:"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-orange-400" },
-        { label:"Нийт зарцуулсан",value:`${formatNumber(stats.total)}₮`,    icon:"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-yellow-400" },
+        { label:"Миний захиалга", value:data.bookings.length,               icon:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color:"text-sky-400",     accent:"border-sky-400/15" },
+        { label:"Баталгаажсан",   value:stats.confirmed,                    icon:"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-emerald-400", accent:"border-emerald-400/15" },
+        { label:"Хүлээгдэж буй",  value:stats.pending,                      icon:"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-orange-400",  accent:"border-orange-400/15" },
+        { label:"Нийт зарцуулсан",value:`${formatNumber(stats.total)}₮`,    icon:"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color:"text-yellow-400", accent:"border-yellow-400/15" },
       ]).map((s,i) => (
-        <div key={i} className="bg-white dark:bg-white/3 border border-stone-200 dark:border-white/6 hover:border-stone-300 dark:hover:border-white/12 rounded-2xl p-5 transition-all group shadow-sm dark:shadow-none">
+        <div key={i} className={`bg-white dark:bg-white/3 border ${s.accent||"border-stone-200 dark:border-white/6"} hover:border-stone-300 dark:hover:border-white/15 rounded-2xl p-5 transition-all group shadow-sm dark:shadow-none`}>
           <div className={`w-9 h-9 rounded-xl bg-stone-100 dark:bg-white/5 flex items-center justify-center mb-4 ${s.color}`}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
               <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
@@ -404,6 +404,23 @@ export default function AdminDashboard() {
 
   const renderBookings = () => (
     <div className="space-y-6">
+      {isAdmin && stats.refundRequested > 0 && (
+        <div className="flex items-center gap-4 bg-orange-400/8 border border-orange-400/25 rounded-2xl px-5 py-4">
+          <div className="w-9 h-9 bg-orange-400/15 rounded-xl flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="text-orange-400 font-bold text-sm">Буцаалтын хүсэлт хүлээгдэж байна</p>
+            <p className="text-orange-400/60 text-xs mt-0.5">{stats.refundRequested} захиалга шийдвэрлэгдэхийг хүлээж байна</p>
+          </div>
+          <button onClick={()=>setFilterStatus("refund_requested")}
+            className="px-4 py-2 bg-orange-400/15 border border-orange-400/25 text-orange-400 text-xs font-bold rounded-xl hover:bg-orange-400/25 transition-all uppercase tracking-widest">
+            Харах
+          </button>
+        </div>
+      )}
       {renderStats()}
       {isAdmin && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1010,7 +1027,12 @@ export default function AdminDashboard() {
                 }`}>
                 <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>{t.icon}</svg>
                 {t.label}
-                {activeTab===t.key && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-yellow-400" />}
+                {t.key==="bookings" && stats.refundRequested>0 && (
+                  <span className="ml-auto px-1.5 py-0.5 bg-orange-400/20 text-orange-400 text-[9px] font-bold rounded-full animate-pulse">
+                    {stats.refundRequested}
+                  </span>
+                )}
+                {activeTab===t.key && stats.refundRequested===0 && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-yellow-400" />}
               </button>
             ))}
 
@@ -1067,12 +1089,27 @@ export default function AdminDashboard() {
           </div>
 
           {/* actions right */}
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
             {isAdmin && activeTab==="bookings" && (
               <>
-                <button onClick={exportToExcel} className="hidden sm:flex items-center gap-2 px-4 py-2 bg-stone-100 dark:bg-white/4 border border-stone-200 dark:border-white/8 text-stone-600 dark:text-white/60 text-xs font-semibold rounded-xl hover:bg-stone-200 dark:hover:bg-white/8 transition-all">Excel</button>
-                <button onClick={exportToPDF}   className="hidden sm:flex items-center gap-2 px-4 py-2 bg-stone-100 dark:bg-white/4 border border-stone-200 dark:border-white/8 text-stone-600 dark:text-white/60 text-xs font-semibold rounded-xl hover:bg-stone-200 dark:hover:bg-white/8 transition-all">PDF</button>
+                <button onClick={exportToExcel} className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-stone-100 dark:bg-white/4 border border-stone-200 dark:border-white/8 text-stone-600 dark:text-white/60 text-[11px] font-semibold rounded-xl hover:bg-stone-200 dark:hover:bg-white/8 transition-all">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Excel
+                </button>
+                <button onClick={exportToPDF} className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-stone-100 dark:bg-white/4 border border-stone-200 dark:border-white/8 text-stone-600 dark:text-white/60 text-[11px] font-semibold rounded-xl hover:bg-stone-200 dark:hover:bg-white/8 transition-all">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  PDF
+                </button>
               </>
+            )}
+            {isAdmin && stats.refundRequested > 0 && (
+              <button onClick={()=>{ setActiveTab("bookings"); setFilterStatus("refund_requested"); }}
+                className="relative p-2 text-orange-400/70 hover:text-orange-400 transition-colors rounded-xl hover:bg-orange-400/8">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-orange-400 text-black text-[8px] font-black rounded-full flex items-center justify-center">{stats.refundRequested}</span>
+              </button>
             )}
             <Link to="/cart" className="relative p-2 text-stone-500 dark:text-white/40 hover:text-stone-900 dark:hover:text-white transition-colors rounded-xl hover:bg-stone-100 dark:hover:bg-white/5">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>

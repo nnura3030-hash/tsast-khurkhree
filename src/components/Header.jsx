@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import { useSettings } from '../context/SettingsContext';
 import { ThemePill } from './ThemeToggle';
 import api from '../services/api';
 import { formatCurrency } from '../utils/formatters';
@@ -26,6 +27,7 @@ export default function Header() {
   const { user, logout }    = useAuth();
   const { cartItems }       = useCart();
   const { dark, toggle }    = useTheme();
+  const settings            = useSettings();
   const location            = useLocation();
   const navigate            = useNavigate();
   const searchRef           = useRef(null);
@@ -36,7 +38,6 @@ export default function Header() {
   const [searchRes,  setSearchRes]  = useState([]);
   const [searching,  setSearching]  = useState(false);
   const [weather,    setWeather]    = useState(null);
-  const [settings,   setSettings]   = useState({});
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -54,7 +55,6 @@ export default function Header() {
         const icons = { 0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',71:'❄️',80:'⛈️',95:'⛈️' };
         setWeather({ temp: Math.round(d.current.temperature_2m), icon: icons[d.current.weather_code] || '🌡️' });
       }).catch(() => {});
-    api.get('/api/settings').then(r => setSettings(r.data || {})).catch(() => {});
   }, []);
 
   useEffect(() => {

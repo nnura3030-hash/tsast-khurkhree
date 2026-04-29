@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useIntersection } from '../hooks/useIntersection';
 import { useCountUp } from '../hooks/useCountUp';
 import { useTheme } from '../context/ThemeContext';
+import { useSettings } from '../context/SettingsContext';
 
 /* ─────────────────────────────── constants ─── */
 const fallbackImg = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2070';
@@ -78,14 +79,13 @@ function Reveal({ children, className = '', delay = 0, from = 'bottom' }) {
 /* ─────────────────────────────── MAIN ─── */
 export default function Home() {
   const { dark } = useTheme();
-  const [settings, setSettings] = useState({});
-  const [reviews,  setReviews]  = useState([]);
-  const [weather,  setWeather]  = useState(null);
+  const settings = useSettings();
+  const [reviews, setReviews] = useState([]);
+  const [weather, setWeather] = useState(null);
   const [statsRef, statsVisible] = useIntersection({ threshold: 0.15 });
   const season = getSeason();
 
   useEffect(() => {
-    api.get('/api/settings').then(r => setSettings(r.data || {})).catch(() => {});
     api.get('/api/reviews/all').then(r => setReviews((r.data || []).filter(v => v.rating >= 4).slice(0, 6))).catch(() => {});
     fetch('https://api.open-meteo.com/v1/forecast?latitude=48.94&longitude=88.13&current=temperature_2m,weather_code')
       .then(r => r.json())

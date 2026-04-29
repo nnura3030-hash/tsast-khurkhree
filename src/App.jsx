@@ -1,9 +1,10 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider }  from './context/AuthContext';
-import { CartProvider }  from './context/CartContext';
-import { ToastProvider } from './context/ToastContext';
-import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider }     from './context/AuthContext';
+import { CartProvider }     from './context/CartContext';
+import { ToastProvider }    from './context/ToastContext';
+import { ThemeProvider }    from './context/ThemeContext';
+import { SettingsProvider } from './context/SettingsContext';
 import PageProgress   from './components/PageProgress';
 import OfflineBanner  from './components/OfflineBanner';
 import Layout         from './components/Layout';
@@ -51,6 +52,7 @@ function App() {
   return (
     <ThemeProvider>
     <AuthProvider>
+      <SettingsProvider>
       <CartProvider>
         <ToastProvider>
           <Router>
@@ -92,6 +94,7 @@ function App() {
           </Router>
         </ToastProvider>
       </CartProvider>
+      </SettingsProvider>
     </AuthProvider>
     </ThemeProvider>
   );
